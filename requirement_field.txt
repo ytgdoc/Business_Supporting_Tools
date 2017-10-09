@@ -1,0 +1,24 @@
+======================================================
+Cont.Info
+	- Contact Own
+	- Em
+	- Contact 
+	- We
+	- Lo
+	- Com
+
+
+=================================================
+B.E
+- Contract
+- Domain
+- Channel
+- Rfx
+- Cont.Name
+- Web
+- Loca
+- Company Name
+========================================================
+1/ Project: Project Name, Pro management, com name, engagement, domain, status
+2/ Client/ Partner: Com name, website, contact name, email
+3/Task management: task, owner, priority, status

@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+  Copyright 2011 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <title>Welcome to Business Supporting Tool</title>
+
+    <style type="text/css">
+      body { font-family: Arial; }
+    </style>
+	
+   	<style type="text/css">
+		.mytable {
+		border:1px solid #000000;
+		border-collapse:collapse;
+		width:200px;
+		}
+		.mytable td{
+		border:1px solid #000000;
+		}
+		.mytable th{
+		background:#cccccc;
+		border:1px solid #000000;
+		}
+	</style>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	google.load('visualization', '1', {packages:['table']});
+	google.load("visualization", "1", {packages:["corechart"]});
+	// Load the Visualization API and the controls package.
+    google.load('visualization', '1.0', {'packages':['controls']});
+	var clientId = '863565692657.apps.googleusercontent.com';
+	var apiKey='AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+	var scopes = 'https://www.googleapis.com/auth/fusiontables';
+	var tableId='1bF7KIYMgv2yACxN9NnaW0ANBpTOMcFpcqP5geMc';
+	var resp1=null;
+	var row;
+	var dataTable;
+	var isAuth=false;
+	var selectedItems=[];
+	var respRowId;
+	
+	//var categoryFilter='Company';
+      // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+        //document.getElementById('select-data').onclick = viewTable;
+		if(isAuth==false)
+			document.getElementById('toggle-button').value="Login";
+		else
+			document.getElementById('toggle-button').value="Logout";
+		document.getElementById('toggle-button').onclick = function() { auth(true); return false;};
+        window.setTimeout(function() { auth(true); }, 1);
+      }
+	
+	function logOut(){
+			document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://bdutools2611.appspot.com";
+		}
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('toggle-button');
+        if (authResult && !authResult.error) {
+			viewTable();
+		 	authorizeButton.value="Logout";
+			authorizeButton.onclick=logOut;
+			isAuth=true;
+			//checkUser();
+        } else {
+		  authorizeButton.value="Login";
+          authorizeButton.onclick = function() { auth(true); return false; };
+        }
+      }
+	function viewTable(){
+		query("SELECT * FROM "+tableId);
+	}
+	
+	function drawTable(){
+		if(resp1.rows!=null){
+			var tempArray=[];
+			for(var k=0; k<=resp1.rows.length; k++)
+			{
+				tempArray[k]=[];
+			}
+			tempArray[0][0]='No.';
+			for(var k=1; k<resp1.columns.length; k++)
+			{
+				tempArray[0][k]=resp1.columns[k];
+			}
+			for(var i=0; i<resp1.rows.length; i++){
+				tempArray[i+1][0]=i+1;
+				for(var j=1; j<resp1.rows[i].length; j++){
+					tempArray[i+1][j]=resp1.rows[i][j];
+				}
+			}
+			dataTable=tempArray;
+		}
+		
+		//draw chart wrapper
+		var data = google.visualization.arrayToDataTable(dataTable);
+		//alert(data);
+		table = new google.visualization.ChartWrapper({
+			'chartType': 'Table',
+			'containerId': 'table_div',
+			'options': {'page':'enable','pageSize':'10' ,'pagingSymbols':{'prev': 'prev', 'next': 'next'}, 'sortAscending':'true'}
+		  });
+		google.visualization.events.addListener(table, 'select', function() {
+		 	var selection = table.getChart().getSelection();
+			
+			var selected = "";
+			for (var i = 0; i < selection.length; i++) {
+			  var item = selection[i];
+			  if (item.row != null && item.column != null) {
+				var str = data.getFormattedValue(item.row, item.column);
+				//selectedItems[i]=str;
+				//var str=item.row;
+				selected +=str+"/";
+				
+			  } else if (item.row != null) {
+				var str = data.getFormattedValue(item.row, 0);
+				//var str=item.row;
+				//selectedItems[i]=str;
+				selected += str+"/";
+				
+				//alert(selectedItems[i]);
+			  } else if (item.column != null) {
+			  	//var str=item.row;
+				var str = data.getFormattedValue(0, item.column);
+				//selectedItems[i]=str;
+				selected += str+"/";
+			  }
+			}
+			selectedItems=selected.split("/");
+		});
+		//Define a StringFilter control for the 'Name' column
+		var slctCategoryFilter=document.getElementById('slctCategoryFilter');
+		slctCategoryFilter.style.display="block";
+		var stringFilter = new google.visualization.ControlWrapper({
+			'controlType': 'StringFilter',
+			'containerId': 'control1',
+			'options': {
+			'filterColumnLabel': slctCategoryFilter.value
+			 }
+		  });
+		   // Create the dashboard.
+ 		 var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard'));
+		 dashboard.bind(stringFilter, table);
+		 dashboard.draw(data);
+		 document.getElementById('editButton').style.display='block';
+		 document.getElementById('deleteButton').style.display='block';
+	}
+	
+	function editRow(){
+		if(selectedItems!=null){
+			if(selectedItems.length>2){
+				alert("Please choose only 1 record to edit!");
+			}
+			else if(selectedItems.length<=1){
+				alert("Please choose 1 record to edit!");
+			}
+				else{
+					queryGetOneRow("SELECT * FROM "+tableId+" WHERE Timestamp='"+resp1.rows[selectedItems[0]-1][0]+"'");
+				}
+		}
+		else
+			alert("Please choose 1 record to edit!");			
+	}
+	
+	function fillUpdateForm(){
+		//alert(row.rows[0][1]);
+		document.getElementById('txtTask').value=row.rows[0][1];
+		//alert(row.rows[0][3]=="Marketing");
+		switch(row.rows[0][2])
+		{
+			case "Pre-sale": 
+				document.getElementById('rdoPsale').checked=true;
+				//checkCate=1;
+				break;
+			case "Sale":
+				document.getElementById('rdoSale').checked=true;
+				//checkCate=2;
+				break;
+			case "Marketing":
+			//alert("hello");
+				document.getElementById('rdoMarketing').checked=true;
+				//checkCate=3;
+				//alert(checkCate);
+				break;
+		}		
+		document.getElementById('txtOwner').value=row.rows[0][3];
+		switch(row.rows[0][4])
+		{
+			case "High": 
+				document.getElementById('rdoHigh').checked=true;
+				//checkPrio=1;
+				break;
+			case "Medium":
+				document.getElementById('rdoMedium').checked=true;
+				//checkPrio=2;
+				break;
+			case "Low":
+				document.getElementById('rdoLow').checked=true;
+				//checkPrio=3;
+				break;
+		}	
+		switch(row.rows[0][5])
+		{
+			case "On-go": 
+				document.getElementById('rdoGo').checked=true;
+				//checkStat=1;
+				break;
+			case "Finished":
+				document.getElementById('rdoFinish').checked=true;
+				//checkStat=2;
+				break;
+			case "On-hold":
+				document.getElementById('rdoHold').checked=true;
+				//checkStat=3;
+				break;
+		}	
+		document.getElementById('dateTargetDate').value=row.rows[0][6];
+		document.getElementById('txtNote').value=row.rows[0][7];
+		document.getElementById('dashboard').style.display='none';
+		document.getElementById('editForm').style.display='block';
+		document.getElementById('cancelButton').onclick=function(){
+			document.getElementById('dashboard').style.display='block';
+			document.getElementById('editForm').style.display='none';
+		};
+		document.getElementById('updateButton').onclick=function(){
+			if(document.getElementById('txtTask').value=="" || document.getElementById('txtOwner').value==""){
+				
+				alert("Cannot update because of empty value of required field!");
+			}
+			else
+				queryUpdateRowId("SELECT ROWID FROM "+tableId+" WHERE Timestamp='"+row.rows[0][0]+"'");
+		};
+	}
+	
+	function queryUpdateOneRow(query){
+		var lowerCaseQuery = query.toLowerCase();
+		var path = '/fusiontables/v1/query';
+		var callback = function(element) {
+		  return function(resp) {
+			selectedItems=null;
+		  	viewTable();
+		  	document.getElementById('dashboard').style.display='block';
+			document.getElementById('editForm').style.display='none';
+		  	};
+		 }
+		 if (lowerCaseQuery.indexOf('select') != 0 &&
+            lowerCaseQuery.indexOf('show') != 0 &&
+            lowerCaseQuery.indexOf('describe') != 0) {
+
+          var body = 'sql=' + encodeURIComponent(query);
+          runClientRequest({
+            path: path,
+            body: body,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': body.length
+            },
+            method: 'POST'
+          }, callback('insert-data-output'));
+
+        }
+	}
+	
+	function updateOneRow(rowId){
+		//alert(rowId);
+		var isCate="";
+		var isPrio="";
+		var isStat="";
+		var checkCate=document.getElementsByName("rdoCate");
+		//alert(checkCate.length);
+		for(var i=0; i<checkCate.length; i++){
+			if(checkCate[i].checked==true){
+				isCate=checkCate[i].value;
+				checkCate=null;
+				break;
+			}
+		}
+				
+		var checkPrio=document.getElementsByName("rdoPrio");
+		for(var i=0; i<checkPrio.length; i++){
+			if(checkPrio[i].checked==true){
+				isPrio=checkPrio[i].value;
+				checkPrio=null;
+				break;
+			}
+		}
+		
+		var checkStat=document.getElementsByName("rdoStat");
+		for(var i=0; i<checkStat.length; i++){
+			if(checkStat[i].checked==true){
+				isStat=checkStat[i].value;
+				checkStat=null;
+				break;
+			}
+		}
+		
+		/*alert(isCate+"--"+checkCate);
+		alert(isPrio+"--"+checkPrio);
+		alert(isStat+"--"+checkStat);*/
+		queryUpdateOneRow("UPDATE "+tableId+" SET "+
+		"'Task' ='"+document.getElementById('txtTask').value+"',"+
+		"'Category' ='"+isCate+"',"+
+		"'Owner' ='"+document.getElementById('txtOwner').value+"',"+
+		"'Priority' ='"+isPrio+"',"+
+		"'Status' ='"+isStat+"',"+
+		"'Target Date' ='"+document.getElementById('dateTargetDate').value+"',"+
+		"'Notes' ='"+document.getElementById('txtNote').value+"' "+
+		"WHERE ROWID ='"+rowId+"'");
+	}
+	
+	
+	function queryUpdateRowId(query){
+		var lowerCaseQuery = query.toLowerCase();
+		var path = '/fusiontables/v1/query';
+		var callback = function(element) {
+		  return function(resp) {
+		  		if(resp.rows!=null)
+		 			updateOneRow(resp.rows[0][0]);
+		  	};
+		 }
+	  runClientRequest({
+		path: path,
+		params: { 'sql': query }
+	  }, callback('select-data-output'));
+	}
+	
+	function queryGetOneRow(query){
+		var lowerCaseQuery = query.toLowerCase();
+		var path = '/fusiontables/v1/query';
+		var callback = function(element) {
+		  return function(resp) {
+		  		row=resp;
+				fillUpdateForm();
+		  	};
+		 }
+	  runClientRequest({
+		path: path,
+		params: { 'sql': query }
+	  }, callback('select-data-output'));
+	}
+
+	
+	function deleteRows(){
+		if(selectedItems!=null){
+			if(selectedItems.length>0)
+			{
+				var r=confirm("Do you want to delete "+(selectedItems.length-1)+" record(s)?");
+				if (r==true)
+				{
+					for(var i=0; i<selectedItems.length-1; i++){
+						//alert(resp1.rows[selectedItems[i]-1][0]);
+						getMyRowIds(resp1.rows[selectedItems[i]-1][0]);
+					}
+				}
+			}
+			else
+				alert("Please choose record(s) you want to delete");
+		}
+		else
+			alert("Please choose record(s) you want to delete");
+	}
+	
+	function getMyRowIds(timeStamp){
+		//alert(timeStamp);
+		queryRowId("SELECT ROWID FROM "+tableId+" WHERE Timestamp='"+timeStamp+"'");
+	}
+	
+	function deleteRow(rowId){
+		//alert(rowId);
+		queryDeleteRowById("DELETE FROM "+tableId+" WHERE ROWID='"+rowId+"'");
+	}
+	
+	function queryDeleteRowById(query){
+		var lowerCaseQuery = query.toLowerCase();
+		var path = '/fusiontables/v1/query';
+		var callback = function(element) {
+		  return function(resp) {
+		  		selectedItems=null;
+		 		viewTable();
+		  	};
+		 }
+		 if (lowerCaseQuery.indexOf('select') != 0 &&
+            lowerCaseQuery.indexOf('show') != 0 &&
+            lowerCaseQuery.indexOf('describe') != 0) {
+
+          var body = 'sql=' + encodeURIComponent(query);
+          runClientRequest({
+            path: path,
+            body: body,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': body.length
+            },
+            method: 'POST'
+          }, callback('insert-data-output'));
+
+        }
+	  
+	}
+	
+	function queryRowId(query){
+		var lowerCaseQuery = query.toLowerCase();
+		var path = '/fusiontables/v1/query';
+		var callback = function(element) {
+		  return function(resp) {
+			respRowId=resp.rows[0][0];
+			deleteRow(respRowId);
+		  };
+		 } 
+	  runClientRequest({
+		path: path,
+		params: { 'sql': query }
+	  }, callback('select-data-output'));
+	}
+      // Send an SQL query to Fusion Tables.
+      function query(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+			resp1=resp;
+			drawTable();
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+
+      // Execute the client request.
+      function runClientRequest(request, callback) {
+        var restRequest = gapi.client.request(request);
+        restRequest.execute(callback);
+      }
+    </script>
+     <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+   	 <link rel="stylesheet" type="text/css" href="../Css file/content.css">
+     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div>
+    	<input type="button" id="toggle-button" value="unknown" style="display:none" >
+        <div id="current">
+       	   <h4> Homepage>Task Managementl>View as Table</h4>
+        </div>
+    </div>
+	<p id="select-data-output"></p>
+    <div id="contact">
+		<h3>Task information:</h3>
+    </div>
+	<div id='dashboard'>
+		<table align="center">
+			<tr>
+				<td>
+					<select id="slctCategoryFilter" onChange="viewTable()" style="display:none">
+						<option value="Owner"  selected="selected">Owner</option>
+						<option value="Priority">Priority</option>
+						<option value="Status">Status</option>
+					</select>
+				</td>
+				<td>
+					<div id='control1'></div>
+				</td>
+			</tr>
+		</table>
+		<div id='table_div'></div>
+				<div id="table">
+                	<div id="table_left">
+					<input type="button" onClick="editRow();" value="Edit" style="display:none" id="editButton"/>
+                    </div>
+					
+                    <div id="table_right">
+					<input type="button" onClick="deleteRows();" value="Delete" style="display:none" id="deleteButton"/>
+                    </div>
+                </div>  
+</div>
+	
+	<!-------------------------------------------------EDIT FORM----------------------------------------------------------------->
+	<div id="editForm" align="center"  style="display:none">
+    	<div id="editForm_title">
+        Edit Task Information
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Task<font color="#FF0000">*</font>
+        	</div>
+            <div id="editForm_fieldcontent3">
+            <textarea value="" id="txtTask"></textarea>
+        	</div>
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Category
+        	</div>
+            <div id="editForm_fieldcontent2">
+            <input type="radio" name="rdoCate" id="rdoPsale" value="Pre-sale">Pre-sale<br>
+            <input type="radio" name="rdoCate" id="rdoSale" value="Sale">Sale<br>
+            <input type="radio" name="rdoCate" id="rdoMarketing" value="Marketing">Marketing
+        	</div>
+        </div>
+         <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Owner<font color="#FF0000">*</font>
+        	</div>
+            <div id="editForm_fieldcontent3">
+            <input type="text" value="" id="txtOwner">
+        	</div>
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Priority<font color="#FF0000">*</font>
+        	</div>
+            <div id="editForm_fieldcontent2">
+            <input type="radio" name="rdoPrio" id="rdoHigh" value="High">High<br>
+            <input type="radio" name="rdoPrio" id="rdoMedium" value="Medium">Medium<br>
+            <input type="radio" name="rdoPrio" id="rdoLow" value="Low">Low
+        	</div>
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Status<font color="#FF0000">*</font>
+        	</div>
+            <div id="editForm_fieldcontent2">
+            <input type="radio" name="rdoStat" id="rdoGo" value="On-go">On-go<br>
+            <input type="radio" name="rdoStat" id="rdoFinish" value="Finished">Finished<br>
+            <input type="radio" name="rdoStat" id="rdoHold" value="On-hold">On-hold
+        	</div>
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent1">
+            Target Date
+        	</div>
+            <div id="editForm_fieldcontent2">
+            <input type="date" value="" id="dateTargetDate">
+        	</div>
+        </div>
+        <div id="editForm_fieldcontent_cha">
+        	<div id="editForm_fieldcontent5">
+            Notes
+        	</div>
+            <div id="editForm_fieldcontent4">
+           <textarea value="" id="txtNote"></textarea>
+        	</div>
+        </div>
+    	<div id="editForm_submit">
+        	<input type="button" id="cancelButton" value="Cancel"/><input type="button" id="updateButton" value="Update"/>
+        </div>
+	</div>
+
+	<!-------------------------------------------------END EDIT FORM-------------------------------------------------------------->
+  </body>
+</html>
+

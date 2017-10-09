@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<!--
+  Copyright 2011 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <title>BDU Tools</title>
+
+    <style type="text/css">
+      body { font-family: Arial; }
+    </style>
+	
+   	<style type="text/css">
+		.mytable {
+		border:1px solid #000000;
+		border-collapse:collapse;
+		width:200px;
+		}
+		.mytable td{
+		border:1px solid #000000;
+		}
+		.mytable th{
+		background:#cccccc;
+		border:1px solid #000000;
+		}
+	</style>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	//google.load('visualization', '1', {packages:['table']});
+	google.load("visualization", "1", {packages:["corechart"]});
+	// Load the Visualization API and the controls package.
+    //google.load('visualization', '1.0', {'packages':['controls']});
+	var clientId = '863565692657.apps.googleusercontent.com';
+	var apiKey = 'AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+	var scopes = 'https://www.googleapis.com/auth/fusiontables';
+	var tableId='1l_PufObgGFMf4Jr9RncSbsoP8EXQwG-Xj7v7G6c';
+	var resp1=null;
+	var array_domain;
+	var isAuth=false;
+	
+	  // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+        document.getElementById('view-chart').onclick = viewPieChart;
+		if(isAuth==false)
+			document.getElementById('toggle-button').value="Login";
+		else
+			document.getElementById('toggle-button').value="Logout";
+		document.getElementById('toggle-button').onclick = function() { auth(false); return false;};
+        window.setTimeout(function() { auth(true); }, 1);
+      }
+	
+	function logOut(){
+			document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://bdutools2611.appspot.com";
+		}
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('toggle-button');
+        if (authResult && !authResult.error) {
+		 	authorizeButton.value="Logout";
+			authorizeButton.onclick=logOut;
+			isAuth=true;
+        } else {
+		  authorizeButton.value="Login";
+          authorizeButton.onclick = function() { auth(false); return false; };
+        }
+      }
+	
+	function viewPieChart(){
+		var date1=document.getElementById('date1').value;
+		var date2=document.getElementById('date2').value;
+		if(date1=="" || date2=="" || date1>=date2){
+			alert("Invalid timerange!");
+		}
+		else{
+			var query = "SELECT Domain, COUNT() as Count "+
+					"FROM "+tableId+" "+ 
+					"WHERE 'Time of Meeting'>=" + "'" + date1 + "'" + " AND 'Time of Meeting'<=" + "'" + date2 + "' "+  "AND 'RFx'='RFP' "+
+					"GROUP BY Domain ORDER BY COUNT() DESC";
+			document.getElementById('title_proposal').style.display='block';
+			document.getElementById('chart_market').style.display='block';
+        	drawPieChartQuery(query);
+		}
+	}
+	// Send an SQL query to Fusion Tables.
+      function drawPieChartQuery(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+		  	resp1=resp;
+			if(resp1.rows!=null)
+		  		drawPieChart();
+			else
+				alert("No data in this timerange");
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	  function drawPieChart() {
+		var tempArray=[];
+		for(var k=0; k<=resp1.rows.length; k++)
+		{
+				tempArray[k]=[];
+		}
+		tempArray[0]=[resp1.columns[0],resp1.columns[1]];
+		for(var i=0; i<resp1.rows.length; i++)
+			for(var j=0; j<resp1.rows[i].length; j++)
+			{
+				if(j%2!=0){
+					resp1.rows[i][j]=parseInt(resp1.rows[i][j])
+				}
+				tempArray[i+1][j]=resp1.rows[i][j];
+			};
+		  array_domain = tempArray;
+		  // Set a callback to run when the Google Visualization API is loaded.
+		  google.setOnLoadCallback(drawChart_market());	
+      }
+	function drawChart_market() {
+		var data = google.visualization.arrayToDataTable(array_domain);
+		var options = {
+			title: ''
+		};
+		var chart = new google.visualization.PieChart(document.getElementById('chart_market'));
+		chart.draw(data, options); 
+	}
+      // Execute the client request.
+      function runClientRequest(request, callback) {
+        var restRequest = gapi.client.request(request);
+        restRequest.execute(callback);
+      }
+    </script>
+     <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+      <link rel="stylesheet" type="text/css" href="../Css file/content.css">
+     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+   		<div id="current">
+                <h4>Homepage>Proposal>Report/Statistics>Pie Chart</h4>
+        </div>
+  <div id="page">
+             <div id="contact">
+                <h3>Input time range to see result</h3>
+            </div>
+        
+        
+        <input type="button" id="toggle-button" value="unknown" style="display:none">
+        <p id="select-data-output"></p>
+        <div id="chart_input">
+        	<input type="date"id="date1">--><input type="date"id="date2">
+        </div>
+        <div id="chart_button">
+        	<input type='button' id='view-chart' value='Draw Chart'>
+        </div>
+        <div id="content_proposal">
+            <div id="title_proposal" style="display:none">
+            <li>Business Enquiry group by domain</li>
+            </div>
+            <div id="chart_market" style="display:none">
+            </div>
+        </div>
+
+   </div>	
+  </body>
+</html>
+

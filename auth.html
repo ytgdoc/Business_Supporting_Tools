@@ -1,0 +1,166 @@
+ 
+<!DOCTYPE html>
+<html>
+  <head>
+  <link rel="shortcut icon" href="https://si0.twimg.com/profile_images/378800000038070881/f3bf8a1b117a3a72896f47923cc4d504.jpeg" type="image/x-icon">
+  </head>
+  <body>
+    <title>WELCOME TO BDU TOOLS</title>
+    
+    <style type="text/css">
+		.style1 {
+			color: #000033;
+			font-size: 16px;
+			font-family: "Times New Roman", Times, serif;
+			cursor:pointer;
+		}		
+   </style>
+   
+    <script type="text/javascript">
+      var clientId = '863565692657.apps.googleusercontent.com';
+      var apiKey = 'AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+      var scopes = 'https://www.googleapis.com/auth/fusiontables';
+      var tableId='1l_PufObgGFMf4Jr9RncSbsoP8EXQwG-Xj7v7G6c';
+	  var tableId_Client='1Z8h-xT0KETqB6BQSXiEbcdNO4q9nybeV6lAkTNI';
+	  var tableId_contact='1BMdb9Rn_HJ7MU4A6Tk7zNSZxVLbDHTkoWTWWe7w';
+	  var tableId_project='1OZDiyPhgCCz56YjUzqsUT-lHsVVgNJljyfjQ7Fg';
+	  var tableId_manager='1bF7KIYMgv2yACxN9NnaW0ANBpTOMcFpcqP5geMc';
+	  var TableIDs=new Array(tableId,tableId_Client,tableId_contact,tableId_project,tableId_manager);
+	  var rest;
+	  var resp1;
+	  var i=0;
+	  var milisec=0 
+	  var seconds=5
+	  flag=true;
+      // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+		document.getElementById('authorize-button').onload = auth(false);
+        window.setTimeout(function() { auth(false); }, 1);
+      }
+    // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+			do{
+				 
+				 var query="SELECT"+"*"+
+					"FROM "+TableIDs[i]; 
+					query_check(query);
+				//function checkemail login
+				function query_check(query_check) {
+				var lowerCaseQuery = query_check.toLowerCase();
+				var path = '/fusiontables/v1/query';
+				var callback = function(element) {
+				  return function(resp) {
+				var output = JSON.stringify(resp);
+					rest= output.substr(2,5);
+					if(rest=="error")
+							{
+								 
+							} 
+							else{
+									document.location.href="http://localhost/Business_Supporting_Tools/Homepage.html";
+								}
+						if(rest=="error"&&i==4)		
+						{
+							     counttime();
+						}
+				  };
+				}
+					  runClientRequest({
+						path: path,
+						params: { 'sql': query_check }
+					  }, callback('select-data-output'));
+				  }
+			
+				  // Execute the client request.
+				  function runClientRequest(request, callback) {
+					var restRequest = gapi.client.request(request);
+					restRequest.execute(callback);
+				  }
+				  i++;
+				  
+		 		 }
+				while(i<=4)		
+
+			
+			} else {
+			   counttime();
+			}
+			
+      }	
+	  function counttime(){ 
+			   document.write(unescape("%3Cstyle%20type%3D%22text/css%22%3E%0A.form_input%7B%0A%09border%3Anone%3B%0A%09text-align%3Acenter%3B%0A%09color%3A%23F00%3B%0A%09font-weight%3Abold%3B%0A%09font-size%3A14px%3B%0A%09%7D%09%0A%3C/style%3E%0A%3Cform%20name%3D%22counter%22%3E%0A%3Ctable%20width%3D%22344%22%20border%3D%220%22%20align%3D%22center%22%20cellpadding%3D%220%22%20cellspacing%3D%220%22%3E%0A%20%20%3Ctbody%3E%3Ctr%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%20%20%3Ctd%20width%3D%22332%22%20height%3D%2224%22%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%3C/tr%3E%0A%20%20%3Ctr%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%20%20%3Ctd%20height%3D%2254%22%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%23FFFFFF%22%3E%3Cspan%20class%3D%22style1%22%3E%0A%20%20%20%20%20%20Sorry%21%20Your%20email%20not%20provide%20in%20our%20Tool%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%3C/tr%3E%0A%20%20%3Ctr%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%23FFFFFF%22%3E%0A%20%20%20%20%3Cfont%20color%3D%22%230000FF%22%3E%20redirect%20to%20login%20page%20in%3C/font%3E%3Cinput%20type%3D%22text%22%20size%3D%221%22%20name%3D%22d2%22%20class%3D%22form_input%22%3E%3Cfont%20color%3D%22%230000FF%22%3Esecond%20%3C/font%3E%0A%20%0A%20%20%20%20%3C/td%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%26nbsp%3B%3C/td%3E%0A%20%20%3C/tr%3E%0A%20%20%3Ctr%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%20height%3D%225px%22%3E%3C/td%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%3C/td%3E%0A%20%20%20%20%3Ctd%20align%3D%22center%22%20valign%3D%22middle%22%20bgcolor%3D%22%239B9BFF%22%3E%3C/td%3E%0A%20%20%3C/tr%3E%0A%3C/tbody%3E%3C/table%3E%0A%3C/form%3E"));
+			
+	 
+
+					 document.counter.d2.value='30' 
+					
+					function display(){ 
+					 if (milisec<=0){ 
+						milisec=9 
+						seconds-=1 
+					 } 
+					 if (seconds<=-1){ 
+						milisec=0 
+						seconds+=1 
+					 } 
+					 else 
+						milisec-=1 
+						document.counter.d2.value=seconds;
+						setTimeout("display()",100) 
+					} 
+						display() 
+					
+		  }	
+		           
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+ 
+   <script type="text/javascript"> 
+		 document.counter.d2.value='30' 
+		var flag=false;
+		function display(){ 
+					 if (milisec<=0){ 
+						milisec=9 
+						seconds-=1 
+					 } 
+					 if (seconds<=-1){ 
+						milisec=0 
+						seconds+=1 
+					 } 
+					 else 
+						milisec-=1 
+						document.counter.d2.value=seconds;
+						setTimeout("display()",100) 
+						
+						 
+						if(seconds==1&& rest=="error")
+						{
+							document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/Business_Supporting_Tools/index.html";
+							//document.location.href="http://localhost/Business_Supporting_Tools/Homepage.html";
+							seconds=-1;
+						}
+						/*
+						 else if(seconds==0&& rest!="error")
+						{
+							document.location.href="http://localhost/Business_Supporting_Tools/Homepage.html";
+						} */
+						if(seconds==1){
+								document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/Business_Supporting_Tools/index.html";
+							}
+					} 
+   </script>
+   
+  
+  </body>
+</html>

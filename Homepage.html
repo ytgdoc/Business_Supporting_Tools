@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+  <link rel="shortcut icon" href="https://si0.twimg.com/profile_images/378800000038070881/f3bf8a1b117a3a72896f47923cc4d504.jpeg" type="image/x-icon">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Business Supporting Tool</title>
+   <script type="text/javascript">
+      var clientId = '863565692657.apps.googleusercontent.com';
+      var apiKey = 'AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+      var scopes = 'https://www.googleapis.com/auth/fusiontables';
+      var tableId='1l_PufObgGFMf4Jr9RncSbsoP8EXQwG-Xj7v7G6c';
+	  var tableId_Client='1Z8h-xT0KETqB6BQSXiEbcdNO4q9nybeV6lAkTNI';
+	  var tableId_contact='1BMdb9Rn_HJ7MU4A6Tk7zNSZxVLbDHTkoWTWWe7w';
+	  var tableId_project='1OZDiyPhgCCz56YjUzqsUT-lHsVVgNJljyfjQ7Fg';
+	  var tableId_manager='1bF7KIYMgv2yACxN9NnaW0ANBpTOMcFpcqP5geMc';
+	  var TableIDs=new Array(tableId,tableId_Client,tableId_contact,tableId_project,tableId_manager);
+	  var resp1;
+	  var rest;
+	  var flag;
+	  var i=0;
+      // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+		document.getElementById('authorize-button').onclick = auth(true);
+        window.setTimeout(function() { auth(true); }, 1);
+      }
+	  //Logout when you click button logout
+	  function logOut(){
+			document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost/Business_Supporting_Tools/index.html";
+		}
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('authorize-button');
+        if (authResult && !authResult.error) {
+		  	authorizeButton.value="Logout";
+			authorizeButton.onclick=logOut;
+			do{
+				 
+				 var query="SELECT"+"*"+
+					"FROM "+TableIDs[i]; 
+					query_check(query);
+				//function checkemail login
+				function query_check(query_check) {
+				var lowerCaseQuery = query_check.toLowerCase();
+				var path = '/fusiontables/v1/query';
+				var callback = function(element) {
+				  return function(resp) {
+				var output = JSON.stringify(resp);
+					rest= output.substr(2,5);
+					if(rest=="error")
+							{
+								 
+							} 
+							else{
+									i=5;
+								}
+						if(rest=="error"&&i==4)		
+						{
+							     window.alert('Sorry! Your email not provide in Us Tool');
+								 logOut();
+						}
+				  };
+				}
+					  runClientRequest({
+						path: path,
+						params: { 'sql': query_check }
+					  }, callback('select-data-output'));
+				  }
+			
+				  // Execute the client request.
+				  function runClientRequest(request, callback) {
+					var restRequest = gapi.client.request(request);
+					restRequest.execute(callback);
+				  }
+				  i++;
+				  
+		  }
+		while(i<=4)		
+
+        } else {
+		  document.location.href="http://localhost/Business_Supporting_Tools/index.html";
+        }
+			
+      }
+	  	
+	
+	  
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+    <link rel="stylesheet" type="text/css" href="Css file/hompage.css">
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+    
+	
+	
+    	<script>
+		$(document).ready(function(){
+		  $('#container ul li a').hover(function(){
+			$('#container ul li a').removeClass('active');
+			$(this).addClass('active');
+		  });
+		});
+		
+			$(document).ready(function(){
+		  $('#container ul li ul li a').hover(function(){
+			$('#container ul li ul li').removeClass('active');
+			$(this).addClass('active');
+		  });
+		});
+		
+  		</script>
+	
+  </head>
+  <body>
+    </div> 
+    <div id="global">
+            <div id="title">
+            <div id="title_left">
+            	<div id="title_left_left">
+                	<a href="index.html">
+                		<img src="GUI/logo.png">
+                    </a>    
+                </div><!--end div left_left-->
+                <div id="title_left_right">
+               <h1>business supporting tool</h1>
+                </div>
+            </div>
+            <div id="title_right">  
+            <input type="button" id="authorize-button"><br>
+            </div>
+        </div>
+        <!--=============================end div title==============================================-->
+              <div id="container">
+                        <ul>
+                                <li><a href="#">&nbsp; &nbsp;Contact information</a>
+                                     <ul> 
+                                        <li><a href="https://docs.google.com/forms/d/1i877aDTnGOPcK-_-jdvk_bR2VpFloRBdLr3h8L1uUHY/viewform" target="iframe"><img src="GUI/icon-add-new.jpg"  align="left"/>Add New Contact</a></li>
+                                        <li><a href="Contact/showTable_delete_update(Contact).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li> 
+                                        <li><a href="Contact/show_namecard(Contact).html" target="iframe"><img src="GUI/icon_as_card.jpg"  align="left"/>View as Name Card</a></li> 
+                                    </ul>
+                                </li>
+                                
+                                
+                                <li><a href="#">Client/Partner</a>
+                                    <ul> 
+                                        <li><a href="https://docs.google.com/forms/d/1h1Bm1Jx-uQmwVTkNSarVrsPTJlvsGZbNHRZAP8TQPBE/viewform" target="iframe"><img src="GUI/icon-add-new.jpg"  align="left"/>Add Client/Partner</a></li>
+                                        <li><a href="Client/showTable_delete_update(Client).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li>
+                                        <li><a href="Client/map.html" target="iframe">View as Map/Location<img src="GUI/icon-as-map.jpg"  align="left"/></a></li>    
+                                    </ul>
+                                </li>
+                                
+                                
+                                <li><a href="#">Business Enquiry</a>
+                                        <ul>
+                                            <li><a href="https://docs.google.com/forms/d/1OcBa9aqY9rG0_IjzGl8OnCil_iOQXyDDBN9x2B4gpfU/viewform" target="iframe"><img src="GUI/icon-add-new.jpg"  align="left"/>Add Business Enquiry</a></li>
+                                            <li><a href="Business/showTable_delete_update(Business).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li>
+                                            <li><a href="#"><img src="GUI/icon_report_statistic.jpg"  align="left"/>Report/Statistics</a>
+                                            	<ul>
+                                                	<li><a href="Business/test_fix_column.html" target="iframe"><img src="GUI/Column-Chart-icon.jpg"  align="left"/>Column Chart</a></li>
+                                                    <li><a href="Business/test_pie.html" target="iframe"><img src="GUI/pie_chart.jpg"  align="left"/>Pie chart</a></li>
+                                                </ul>
+                                            </li>
+                            
+                                       </ul>
+                                </li>
+                                
+                                <li><a href="#">Proposal</a>
+                                        <ul>
+                                            <li><a href="Proposal/showTable_delete_update(Proposal).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li>
+                                            <li><a href="#"><img src="GUI/icon_report_statistic.jpg"  align="left"/>Report/Statistics</a>
+                                            	<ul>
+                                                	<li><a href="Proposal/test_fix_column.html" target="iframe"><img src="GUI/Column-Chart-icon.jpg"  align="left"/>Column Chart</a></li>
+                                                    <li><a href="Proposal/test_pie.html" target="iframe"><img src="GUI/pie_chart.jpg"  align="left"/>Pie chart</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                </li>
+                                
+                                <li class="container_a"><a href="#">Project</a>
+                                        <ul>
+                                            <li><a href="https://docs.google.com/forms/d/1oirFImRp3a5NKUzZmPn1USSzCiqP-c2XJ9JgWO_otLo/viewform" target="iframe"><img src="GUI/icon-add-new.jpg"  align="left"/>Add Client/Partner</a></li>
+                                            <li><a href="Project/showTable_delete_update(Project).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li>
+                                            <li><a href="#"><img src="GUI/icon_report_statistic.jpg"  align="left"/>Report/Statistics</a>
+                                            	<ul>
+                                                	<li><a href="Project/test_fix_column.html" target="iframe"><img src="GUI/Column-Chart-icon.jpg"  align="left"/>Column Chart</a></li>
+                                                    <li><a href="Project/test_pie.html" target="iframe"><img src="GUI/pie_chart.jpg"  align="left"/>Pie chart</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                </li>
+                                <li><a href="#">Task management</a>
+                                        <ul>
+                                            <li><a href="https://docs.google.com/forms/d/1kxj4N-zRia6x5gSgm40H-2I-kXlYMN33WweVppXSgpA/viewform" target="iframe"><img src="GUI/icon-add-new.jpg"  align="left"/>Add task Management</a></li>
+                                            <li><a href="Task/showTable_delete_update(Task).html" target="iframe"><img src="GUI/icon_view-as-table.jpg"  align="left"/>View as Table</a></li>
+                                        </ul>  
+                                </li>
+                        </ul>
+             </div>
+             <!--=============================end div container==============================================-->
+            <div id="page">
+		<iframe name="iframe" width="1220" height="900"></iframe>
+            </div> 
+    </div>
+    </div>  
+  </body>
+</html>

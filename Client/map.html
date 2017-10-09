@@ -1,0 +1,170 @@
+<html>
+<head>
+<title>Single Info Windows</title>
+
+<style type="text/css">
+  body {
+    font-family: sans-serif;
+  }
+  #map {
+    width: 1350px;
+    height: 550px;
+  }
+</style>
+
+	<script type="text/javascript">
+	var clientId = '863565692657.apps.googleusercontent.com';
+	var apiKey='AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+	var scopes = 'https://www.googleapis.com/auth/fusiontables';
+	var tableId='1Z8h-xT0KETqB6BQSXiEbcdNO4q9nybeV6lAkTNI';
+	var dataTable=[];
+	var isAuth=false;
+	
+  function initialize() {
+	gapi.client.setApiKey(apiKey);
+	//document.getElementById('select-data').onclick = drawMap;
+	window.setTimeout(function() { auth(true); }, 1);
+  }
+	
+	//function logOut(){
+	//		document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://bdutools2611.appspot.com";
+	//	}
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+			query('SELECT * FROM '+tableId);
+        }
+      }
+	
+	function query(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+		  	for(var i=0; i<resp.rows.length; i++){
+				dataTable[i]=[];
+			}
+			
+			for(var i=0; i<resp.rows.length; i++){
+				for(var j=0; j<resp.columns.length; j++){
+					dataTable[i][j]=resp.rows[i][j];
+				}
+			}
+
+			drawMap();
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+
+      // Execute the client request.
+      function runClientRequest(request, callback) {
+        var restRequest = gapi.client.request(request);
+        restRequest.execute(callback);
+      }
+	</script>
+
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+  google.maps.event.addDomListener(window, 'load', drawMap);
+  var geocoder=new google.maps.Geocoder();
+  var map;
+  var marker;
+  var infoWindow = new google.maps.InfoWindow;
+  function drawMap() {
+  
+	for(var i=dataTable.length-1; i>=0; i--){
+		//alert(dataTable[i][2]);
+		map = new google.maps.Map(document.getElementById('map'), {
+		  zoom: 2,
+		  //center: new google.maps.LatLng(37.789879, -122.390442),
+		  mapTypeId: google.maps.MapTypeId.ROADMAP
+		});
+	
+		function formatName(str){
+			var result=str.substring(0,1);
+			for(var i=1; i<str.length; i++){
+				if(str.substring(i,i+1)>='A' && str.substring(i,i+1)<='Z'){
+					result+=str.substring(i,i+1);
+				}
+			}
+			return result;
+		}	
+		
+		var onMarkerClick = function() {
+		 	var clickedMarker = this;
+		  	var latLng = clickedMarker.getPosition();
+			  var lat = parseFloat(latLng.lat());
+			  var lng = parseFloat(latLng.lng());
+			  var latlng = new google.maps.LatLng(lat, lng);
+			  geocoder.geocode({'latLng': latlng}, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+				  if (results[1]) {
+					var countryName=results[1].formatted_address.split(',');
+					for(var i=0; i<dataTable.length; i++){
+						if(dataTable[i][4].trim()==countryName[countryName.length-1].trim() || formatName(dataTable[i][4].trim())==countryName[countryName.length-1].trim()){
+				infoWindow.setContent("<b>Date:</b> "+dataTable[i][1]+"<br>"+"<b>Company Name:</b> "+dataTable[i][2]+"<br>"+ "<b>Company Description:</b> "+dataTable[i][3]+"<br>"+
+				"<b>Location:</b> "+dataTable[i][4]+"<br><b>Website:</b> "+dataTable[i][5]+"<br><b>Contact Name:</b> "+dataTable[i][6]+"<br>"+
+				"<b>Email:</b> "+dataTable[i][7]+"<br><b>Phone:</b> "+dataTable[i][8]);
+							
+							break;			
+						}
+					}
+				
+					 infoWindow.open(map, clickedMarker);
+					//infowindow.open(map, marker);
+				  } else {
+					alert('No results found');
+				  }
+				} else {
+				  alert('Geocoder failed due to: ' + status);
+				}
+			  }); 
+		};
+		
+		google.maps.event.addListener(map, 'click', function() {
+		  infoWindow.close();
+		});
+		
+		geocoder.geocode( { 'address': dataTable[i][4]}, function(results, status) {
+		 if (status == google.maps.GeocoderStatus.OK) {
+			  map.setCenter(results[0].geometry.location);
+				  marker = new google.maps.Marker({
+				  map: map,
+				  position: results[0].geometry.location
+			  });
+			  google.maps.event.addListener(marker, 'click', onMarkerClick);
+			}
+		  });
+	}
+  }
+</script>
+
+	
+     <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+       <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+     <link rel="stylesheet" type="text/css" href="../Css file/content.css">
+</head>
+<body>
+
+   <div id="current">
+       	    <h4>Homepage>Client/Partner>View as Map/Location</h4>
+   </div>
+   
+	<p id="select-data-output"></p>
+  <div id="map"></div>
+</body>
+</html>

@@ -1,0 +1,665 @@
+@import url("reset.css");
+body {
+	margin:0 auto;
+	font-family: 'PT Sans', sans-serif;
+}
+#contact{
+		width:1200px;
+		height:50px;
+		float:left;
+		margin:0 auto;
+		padding-top:30px;
+		text-transform:uppercase;
+		font-weight:500;
+		
+			}
+	#sub_title{
+			font-family: 'PT Sans', sans-serif;
+			color:#00a0e6;
+			font-size:16px;
+			text-align:center;
+		}	
+	#contact h3{
+			font-family: 'PT Sans', sans-serif;
+			color:#0077af;
+			font-weight:bold;
+			font-size:33px;
+			text-align:center;
+		}	
+		#editButton,
+		#deleteButton,
+		#cancelButton,
+		#updateButton,
+		#select-data,
+		#view-business,
+		#view-channel,
+		#view-chart{
+				padding:9px 20px;
+				margin:0 auto;
+				cursor:pointer;
+				border: none;
+				border-radius: 5px;
+				color: white;
+				background: -moz-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+				background: -o-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+				background: -ms-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+				background: -webkit-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+				color:#fff;
+				font-weight:bold;
+				margin-left:10px;
+				margin-top:20px;
+			}	
+		#editButton:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#deleteButton:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#cancelButton:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#updateButton:active{
+				background: #00669c;
+				box-shadow: none;
+			}	
+		#select-data:active{
+				background: #00669c;
+				box-shadow: none;
+			}		
+		#view-client:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#view-detail-client:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#view-business:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#view-detail-business:active{
+				background: #00669c;
+				box-shadow: none;
+			}
+		#view-channel:active{
+				background: #00669c;
+				box-shadow: none;
+			}	
+		#view-chart:active{
+				background: #00669c;
+				box-shadow: none;
+			}						
+		#table{
+			width:200px;
+			height:50px;
+			margin:0 auto;
+			}
+			#table_left{
+				width:80px;
+				height:45px;
+				float:left;
+				}
+			#table_right{
+				width:100px;
+				height:45px;
+				float:left;
+				}	
+	
+		#current{
+				width:1215px;
+				height:25px;
+				float:left;
+				font-family: 'PT Sans', sans-serif;
+				font-size:18px;
+				text-shadow:0 0 1px rgba(0,0,0,0.5);
+				font-weight:200px;
+				padding-left:5px;
+				text-align:left;
+				margin-top:5px;
+			}
+			#current h4{
+				float:left;
+				width:60xp;
+				height:21px;
+				padding-top:4px;
+				padding-left:3px;
+				}
+			#current img{
+				width:auto;
+				height:25px;
+				float:left;
+				}
+			#current2{
+				width:1203px;
+				height:25px;
+				float:left;
+				font-family: 'PT Sans', sans-serif;
+				font-size:15px;
+				color:#004765;
+				text-shadow:0 0 1px rgba(0,0,0,0.5);
+				font-weight:200px;
+				text-align:left;
+				background:#72cff6;
+				border-top:1px solid #003f5e;
+				border-bottom:1px solid #003f5e;
+			}
+			#current2 h4{
+				float:left;
+				width:60xp;
+				height:21px;
+				padding-top:4px;
+				padding-left:3px;
+				}
+			#current2 img{
+				width:auto;
+				height:25px;
+				float:left;
+				}		
+	
+		#time_range1,
+		#time_range2{
+				width:140px; 
+				height:20px;
+				border:2px solid #e7e7e7;
+				border-radius:5px;
+			}
+		#page{
+			width:1200px;
+			height:950px;
+			float:left;
+			text-align:center;
+			
+			}
+		#page2{
+			width:1220px;
+			height:auto;
+			float:left;
+			text-align:center;
+			}			
+		#filltext{
+			width:1200px;
+			height:190px;
+			margin:0 auto;
+			float:left;
+			}
+			#filltext2,
+			#filltext3{
+				width:1200px;
+				height:63px;
+				float:left;
+				text-align:center;
+				}
+			#filltext1{
+					width:1200px;
+					height:43px;
+					float:left;
+					text-align:center;
+				}	
+			#filltext_left{
+				width:580px;
+				height:31px;
+				float:left;
+				text-align:right;
+				padding-top:12px;
+				padding-right:10px;
+				}
+			#filltext_right{
+				width:540px;
+				height:31px;
+				float:left;
+				text-align:left;
+				padding-left:10px;
+				padding-top:12px;
+				}	
+			#filltext2_left	{
+				width:580px;
+				height:53px;
+				float:left;
+				text-align:right;
+				padding-top:2px;
+				padding-right:10px;
+				}
+			#filltext2_right	{
+				width:540px;
+				height:53px;
+				float:left;
+				text-align:left;
+				padding-left:10px;
+				padding-top:2px;
+				}		
+		#table_content{
+				width:1200px;
+				height:auto;
+				float:left;
+				margin:0 auto;
+			}	
+	/*==========================================================================*/	
+		#chart_div_left{
+				width:150px;
+				height:500px;
+				float:left;
+			}	
+		#chart_div{
+				width:900px;
+				height:500px;
+				float:left;
+			}
+			
+	/*======================================================================*/		
+			
+		#title{
+				width:1200px;
+				height:120px;
+				float:left;
+				text-align:center;
+				margin:0 auto;
+			}
+			#title	h3{
+				font-family: 'PT Sans', sans-serif;
+				color:#0077af;
+				font-weight:bold;
+				font-size:20px;
+				text-align:center;
+				}	
+		#dashboard{
+				width:1220px;
+				height:auto;
+				float:left;
+				margin:0 auto;
+			}	
+			/*css of pie chart*/
+			
+			
+		#nav_bar_cha{
+			display:inline-block;
+			width:400px;
+			height:172px;
+			float:left;
+			margin-left:10px;
+			margin-top:30px;
+			overflow: auto;
+			z-index: 10;
+			background:url(../GUI/bg-nav.png) repeat #00a0e6;
+			border:1px solid  #006bad;
+			}	
+			
+		#nav_bar{
+				width:380px;
+				height:152px;
+				float:left;
+				margin-top:9px;
+				margin-left:9px;
+				border:1px solid #006bad;
+				-webkit-box-shadow: 0px 0px 5px #b0b0b0; 
+				-moz-box-shadow: 0px 0px 5px #b0b0b0; 
+				box-shadow: 0px 0px 5px #b0b0b0; 
+				background:url(../GUI/bg-nav.png) repeat #007fb6;
+				overflow: auto;
+				/*border:10px solid #00a0e6 ;*/
+			}				
+			#nav_bar_sub{
+					width:380px;
+					height:35px;
+					float:left;
+					padding-top:15px;
+				}
+			#nav_bar_sub2{
+					width:378px;
+					height:35px;
+					float:left;
+					padding-top:15px;	
+					border-bottom:1px solid #7bbbf9;
+					border-top:1px solid #7bbbf9;
+				}	
+				#client_meeting,
+				#business_market,
+				#business_channel{
+						width:20px;
+						height:20px;
+						cursor:pointer;
+						float:left;	
+					}
+				#view-client{
+						width:90px;
+						height:32px;
+						cursor:pointer;
+						margin:0 auto;
+						border: none;
+						border-radius: 5px;
+						color: white;
+						background: -moz-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+						background: -o-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+						background: -ms-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+						background: -webkit-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+						color:#fff;
+						font-weight:bold;
+						margin-left:5px;
+					}
+				#nav_bar_sub li,
+				#nav_bar_sub2 li{
+						font-family: 'PT Sans', sans-serif;
+						color:#FFF;
+						list-style:none;
+						float:left;
+						padding-top:4px;
+						text-transform:uppercase;
+					}
+			#sub_page{
+				width:1200px;
+				height:auto;
+				float:left;
+				margin-top:30px;
+				}	
+				
+					#show_hide_client_in{
+							width:700px;
+							height:100px;
+							float:left;
+							padding-top:30px;
+							margin-top:40px;
+							margin-left:20px;
+						}
+					#show_hide_client_in_title{
+							width:700px;
+							height:70px;
+							float:left;
+						}
+					#show_hide_client_in_button{
+						width:700px;
+						height:30px;
+						float:left;
+					}	
+					#show_hide_client_in_title li{
+							font-family: 'PT Sans', sans-serif;
+							color:#0077af;
+							list-style:none;
+							font-weight:bold;
+							font-size:20px;
+							margin-bottom:5px;
+						}
+					#show_hide_client_chart,
+					#show_hide_market_chart,
+					#show_hide_channel_chart{
+							width:1200px;
+							height:500px;
+							float:left;
+							margin:0 auto;
+						}
+						#sub_show_chart{
+								width:560px;
+								height:500px;
+								float:left;
+								margin-left:10px;
+								margin-right:20px;
+
+							}
+						#sub_show_chart2{
+								width:560px;
+								height:500px;
+								float:left;
+								margin-left:20px;
+							}	
+							#chart_market_business,
+							#chart_market_client{
+									width:560px;
+									height:335px;
+									float:left;
+									border:10px solid #72cff6;
+									border-bottom:none;
+									border-top:none;
+									padding-top:30px;
+									
+								}
+							#chart_nation_client,
+							#chart_nation_business{
+									width:560px;
+									height:335px;
+									float:left;
+									border:10px solid #72cff6;
+									border-bottom:none;
+									border-top:none;
+									padding-top:30px;
+							}
+							#titile_chart_sub{
+									width:560px;
+									height:15px;
+									float:left;
+									margin:0 auto;
+									border:10px solid #72cff6;
+									border-bottom:none;
+									border-top-left-radius: 10px;
+									border-top-right-radius: 10px;
+
+								}
+								#titile_chart_sub li{
+										font-family: 'PT Sans', sans-serif;
+										color:#0077af;
+										list-style:none;
+										font-weight:bold;
+										padding-top:20px;
+									}
+							#chart_channel{
+									width:560px;
+									height:385px;
+									float:left;
+									border:10px solid #72cff6;
+									border-bottom-left-radius: 10px;
+									border-bottom-right-radius: 10px;
+									border-top:none;
+									padding-top:30px;
+								}	
+							#sub_show_chart_fooder2{
+									width:560px;
+									height:49px;
+									float:left;
+									border:10px solid #72cff6;
+									border-top:none;
+									border-bottom-left-radius: 10px;
+									border-bottom-right-radius: 10px;
+								}	
+								#sub_show_chart_fooder2 input[type=button]{
+									padding:8px 16px;
+									cursor:pointer;
+									margin:0 auto;
+									border: none;
+									border-radius: 5px;
+									color: white;
+									background: -moz-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+									background: -o-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+									background: -ms-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+									background: -webkit-linear-gradient(top, #0195cf 30%, #00a0e6 80%);
+									color:#fff;
+									font-weight:bold;
+									margin-left:5px;
+									display:none;
+								}
+							#sub_show_chart_fooder{
+									width:560px;
+									height:50px;
+									float:left;
+
+								}
+							#chart_channel_left,
+							#chart_channel_right{
+									width:300px;
+									height:415px;
+									float:left;
+								}
+							#chart_channel_area{
+									width:1200px;
+									height:385px;
+									float:left;
+									padding-top:30px;
+								}	
+							#sub_show_chart_fooder_channel{
+									width:1200px;
+									height:50px;
+									float:left;
+								}											
+			/*=======================css proposal=====================================*/
+			#chart_input{
+					width:1200px;
+					height:35px;
+					float:left;
+					text-align:center;
+				}
+			#chart_button{
+					width:1200px;
+					height:60px;
+					float:left;
+					text-align:center;
+				}	
+			#chart_market{
+				width:630px;
+				height:450px;
+				float:left;
+				margin:0 auto;
+				padding-left:70px;
+				border:10px solid #72cff6;
+				border-bottom-left-radius: 10px;
+				border-bottom-right-radius: 10px;
+				border-top:none;
+				margin-left:250px;
+				}	
+			#title_proposal{
+					width:700px;
+					height:30px;
+					float:left;
+					margin:0 auto;
+					text-align:center;
+					margin-left:250px;
+					border:10px solid #72cff6;
+					border-top-left-radius: 10px;
+					border-top-right-radius: 10px;
+					border-bottom:none;
+					padding-top:30px;
+				}	
+			#title_proposal li{
+					font-family: 'PT Sans', sans-serif;
+					color:#0077af;
+					list-style:none;
+					font-weight:bold;
+					font-size:25px;
+					margin-bottom:5px;
+				}	
+				
+			#content_proposal{
+					width:1190px;
+					height:530px;
+					float:left;
+					margin-left:10px;
+					margin-top:50px;
+				}	
+		/*======================================editForm=================================*/	
+		#editForm{
+				width:auto;
+				height:auto;
+				
+				float:left;
+				margin-left:370px;
+				margin-right:290px;
+			}
+			#editForm_title{
+				width:480px;
+				height:35px;
+				float:left;
+				font-family: 'PT Sans', sans-serif;
+				font-size:19px;
+				color:#00a0e6;
+				}
+			#editForm_fieldcontent_cha{
+				width:500px;
+				height:auto;
+				float:left;
+			
+				}
+			#editForm_fieldcontent1{
+					
+					width:198px;
+					height:38px;
+					font-family: 'PT Sans', sans-serif;
+					color:#00669c;
+					float:left;
+					border:1px solid  #00669c;
+					border-right:none;
+					border-bottom:none;
+					padding-top:25px;
+					font-weight:bold;
+				}	
+			#editForm_fieldcontent2{
+					
+					width:270px;
+					height:63px;
+					font-family: 'PT Sans', sans-serif;
+					float:left;
+					text-align:left;
+					border:1px solid  #00669c;
+					padding-left:8px;
+					border-bottom:none;
+				}
+				#editForm_fieldcontent3{
+						width:270px;
+						height:53px;
+						font-family: 'PT Sans', sans-serif;
+						float:left;
+						text-align:left;
+						border:1px solid  #00669c;
+						padding-top:10px;
+						padding-left:8px;
+						border-bottom:none;
+						
+					}
+				#editForm_fieldcontent4{
+						width:270px;
+						height:53px;
+						font-family: 'PT Sans', sans-serif;
+						float:left;
+						text-align:left;
+						border:1px solid  #00669c;
+						padding-top:10px;
+						padding-left:8px;
+						
+					}
+				#editForm_fieldcontent5{
+				
+					width:198px;
+					height:38px;
+					font-family: 'PT Sans', sans-serif;
+					color:#00669c;
+					float:left;
+					border:1px solid  #00669c;
+					border-right:none;
+					padding-top:25px;
+					font-weight:bold;
+				}	
+					#txtOwner{
+						margin-top:7px;
+						border:2px solid #e7e7e7;
+						border-radius:5px;
+						width:160px;
+						height:20px;
+						float:left;
+					}
+					#txtNote,
+					#txtTask{
+							width:160px;
+							height:40px;
+							float:left;
+						}
+					#dateTargetDate{
+							margin-top:20px;
+							float:left;
+							margin-left:8px;
+						}	
+			#editForm_submit{
+					
+					width:400px;
+					height:100px;
+					float:left;
+					padding-right:100px;
+				}	
+			

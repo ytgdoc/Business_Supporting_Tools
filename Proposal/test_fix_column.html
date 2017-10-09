@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<!--
+  Copyright 2011 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <title>BDU Tools</title>
+
+    <style type="text/css">
+      body { font-family: Arial; }
+    </style>
+	
+   	<style type="text/css">
+		.mytable {
+		border:1px solid #000000;
+		border-collapse:collapse;
+		width:200px;
+		}
+		.mytable td{
+		border:1px solid #000000;
+		}
+		.mytable th{
+		background:#cccccc;
+		border:1px solid #000000;
+		}
+	</style>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	google.load("visualization", "1", {packages:["corechart"]});
+   	var clientId = '863565692657.apps.googleusercontent.com';
+	var apiKey = 'AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+        var scopes = 'https://www.googleapis.com/auth/fusiontables';
+        var tableId='1l_PufObgGFMf4Jr9RncSbsoP8EXQwG-Xj7v7G6c';		
+	var array=[];
+	var sourceArray=[];
+	var tempArray1=[];
+	var tempArray2=[];
+	var date1, date2, date3, date4;
+      // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(function() { auth(true); }, 1);
+      }
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+		document.getElementById('select-data').onclick = selectData;
+        }
+      }
+	  
+      // Run a request to SELECT data.
+      function selectData() {
+	  	date1=document.getElementById('date1').value;
+		date2=document.getElementById('date2').value;
+		date3=document.getElementById('date3').value;
+		date4=document.getElementById('date4').value;
+		if(document.getElementById('time_range1').value!="" && document.getElementById('time_range2').value!=""){
+			if(date1=="" || date2=="" || date1>=date2 || date3=="" || date4=="" || date3>=date4){
+				alert("Invalid timerange!");
+			}
+			else{
+				var query0 = "SELECT Domain FROM "+tableId+ " WHERE 'RFx'='RFP'"+" GROUP BY Domain";	
+		    	init_Array(query0);
+			}
+		}
+		else{
+			alert("Please input value into 2 textbox!");
+		}
+	}
+			 
+	function mergeArray()
+			{
+			//xu ly mang array
+				for(var i=0; i<sourceArray.length; i++)
+				{
+					array[i+1][0]=sourceArray[i][0];
+				}
+
+				for(var i=1; i<array.length; i++)
+				{
+					var isEqual=false;
+					for(var j=0; j<tempArray1.length; j++)
+					{
+						if(tempArray1[j][0]==array[i][0])
+						{
+							array[i][1]=tempArray1[j][1];
+							isEqual=true;
+							break;
+						}
+					}
+					if(isEqual==false)
+						array[i][1]=0;
+						
+					isEqual=false;
+					for(var j=0; j<tempArray2.length; j++)
+					{
+						if(tempArray2[j][0]==array[i][0])
+						{
+							array[i][2]=tempArray2[j][1];
+							isEqual=true;
+							break;
+						}
+					}
+					if(isEqual==false)
+						array[i][2]=0;
+				}
+			}
+			
+	function drawChart() {
+				var data = google.visualization.arrayToDataTable(array);
+				var options = {
+				  title: 'Compare Business Enquiry By Domain',
+				  hAxis: {title: 'Domain', titleTextStyle: {color: 'red'}}
+				};
+		
+				var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+				chart.draw(data, options);     	
+				flag=true;
+	}
+	
+      // Send an SQL query to Fusion Tables.
+      function init_Array(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+			for(var k=0; k<=resp.rows.length; k++)
+			{
+				array[k]=[];
+			}
+			for(var k=0; k<resp.rows.length; k++)
+			{
+				sourceArray[k]=[];
+			}
+			for(var i=0; i<resp.rows.length; i++)
+				for(var j=0; j<resp.rows[i].length; j++)
+				{
+					sourceArray[i][j]=resp.rows[i][j];
+				}
+			var TimeRange1 = document.getElementById('time_range1').value;
+			var query1="SELECT Domain, COUNT() as "+ TimeRange1 +" "+
+				"FROM "+tableId+" "+
+				"WHERE 'Time of Meeting'>=" + "'" + date1 + "'" + " AND 'Time of Meeting'<=" + "'" +date2 + "' "+"AND 'RFx'='RFP' "+
+				"GROUP BY Domain";
+				array_rangetime1(query1);
+          }
+        }
+         runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	   function array_rangetime1(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+			array[0][0]=resp.columns[0];
+			array[0][1]=resp.columns[1];
+			var TimeRange2 = document.getElementById('time_range2').value;
+			var query2="SELECT Domain, COUNT() as "+TimeRange2 +" "+
+					"FROM "+tableId+" "+
+					"WHERE 'Time of Meeting'>=" + "'" + date3 + "'" + " AND 'Time of Meeting'<=" + "'" +date4 + "' "+ "AND 'RFx'='RFP' "+
+					"GROUP BY Domain";
+			
+			if(resp.rows!=null)
+			{
+				for(var k=0; k<resp.rows.length; k++)
+				{
+					tempArray1[k]=[];
+				}
+				for(var i=0; i<resp.rows.length; i++)
+					for(var j=0; j<resp.rows[i].length; j++)
+					{
+						if(j%2!=0){
+							resp.rows[i][j]=parseInt(resp.rows[i][j]);
+						}
+						tempArray1[i][j]=resp.rows[i][j];
+					}		
+				array_rangetime2(query2);
+			}
+			else
+			{
+				for(var k=0; k<sourceArray.length; k++)
+				{
+					tempArray1[k]=["empty"];
+				}
+				array_rangetime2(query2);
+			}
+          };
+        }
+         runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	   function array_rangetime2(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+			array[0][2]=resp.columns[1];
+			if(resp.rows!=null)
+			{
+				for(var k=0; k<resp.rows.length; k++)
+				{
+					tempArray2[k]=[];
+				}
+				for(var i=0; i<resp.rows.length; i++)
+					for(var j=0; j<resp.rows[i].length; j++)
+					{
+						if(j%2!=0){
+						resp.rows[i][j]=parseInt(resp.rows[i][j]);
+						}
+						tempArray2[i][j]=resp.rows[i][j];
+					};
+			}		
+			else
+			{
+				for(var k=0; k<sourceArray.length; k++)
+				{
+					tempArray2[k]=["empty"];
+				}
+			}
+			mergeArray();
+			google.setOnLoadCallback(drawChart());
+			};
+        }
+         runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+
+      // Execute the client request.
+      function runClientRequest(request, callback) {
+        var restRequest = gapi.client.request(request);
+        restRequest.execute(callback);
+      }
+    </script>
+     <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+     <link rel="stylesheet" type="text/css" href="../Css file/content.css">
+     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+ 		 <div id="current">
+                <h4>Homepage>Proposal>Report/Statistics>Column Chart</h4>
+                
+        </div>
+        <p id="select-data-output"></p>
+        <div id="page">
+        <div id="contact">
+                <h3>Please fill the information below</h3>
+        </div> 
+        <div id="filltext">
+        	<div id="filltext1">
+	            <div id="filltext_left">
+                	Compare	<input type="text" value="" id="time_range1" placeholder ="Fund">
+                </div>
+                <div id="filltext_right">
+                	<input type="date"id="date1"><input type="date"id="date2">
+                </div>
+            </div>
+            <div id="filltext2">
+            	<div id="filltext2_left">
+                	To	<input type="text" value="" id="time_range2" placeholder ="Fund">
+                </div>
+                <div id="filltext2_right">
+                	<input type="date"id="date3"><input type="date"id="date4">
+                </div>
+            </div>
+            <div id="filltext3">
+            	<input type="button" id="select-data" value="Draw chart">
+            </div>
+         </div>   
+        <div id="chart_div_left">    
+        </div>
+        <div id="chart_div">
+        </div>
+    
+        </div>
+		
+  </body>
+</html>

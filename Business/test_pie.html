@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BDU Tools</title>
+
+    <style type="text/css">
+      body { font-family: Arial; }
+    </style>
+	
+   	<style type="text/css">
+		.mytable {
+		border:1px solid #000000;
+		border-collapse:collapse;
+		width:200px;
+		}
+		.mytable td{
+		border:1px solid #000000;
+		}
+		.mytable th{
+		background:#cccccc;
+		border:1px solid #000000;
+		}
+	</style>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	google.load("visualization", "1", {packages:["corechart"]});
+	var clientId = '863565692657.apps.googleusercontent.com';
+	var apiKey = 'AIzaSyCj4FjUE6NDN0wvxZ0npSfAaBjbQaYhEEo';
+	var scopes = 'https://www.googleapis.com/auth/fusiontables';
+	var tableId='1l_PufObgGFMf4Jr9RncSbsoP8EXQwG-Xj7v7G6c';
+	var market=[['United States of America','Canada','Mexico'],[ 'United Kingdom','France','Sweden','Italy','Germany','Spain'],['Japan'],['Australia'],['India','China','Vietnam']];
+	var resp1=null;
+	var resp2=null;
+	var resp3=null;
+	var array_channel;
+	var array_nation_client, array_market_client;
+	var array_market_business, array_nation_business;
+	var isAuth=false;
+	
+	  // Initialize the client, set onclick listeners.
+      function initialize() {
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(function() { auth(true); }, 1);
+      }
+	
+	//function logOut(){
+	//		document.location.href="https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://bdutools2611.appspot.com";
+	//	}
+      // Run OAuth 2.0 authorization.
+      function auth(immediate) {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: immediate
+        }, handleAuthResult);
+      }
+
+      // Handle the results of the OAuth 2.0 flow.
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+		document.getElementById('view-client').onclick = viewClient;
+		document.getElementById('view-detail-client').onclick = viewDetail_client;
+		document.getElementById('view-detail-business').onclick = viewDetail_business;
+        }
+      }
+	
+	function viewClient(){
+		var date1=document.getElementById('date1').value;
+		var date2=document.getElementById('date2').value;
+		if(date1=="" || date2=="" || date1>=date2){
+			alert("Invalid timerange!");
+		}
+		else{
+			var query = "SELECT Location, COUNT() as Count "+
+					"FROM "+tableId+" "+ 
+					"WHERE 'Time of Meeting'>=" + "'" + date1 + "'" + " AND 'Time of Meeting'<=" + "'" + date2 + "' "+ "AND 'Meeting'='Yes' "+
+					"GROUP BY Location ORDER BY COUNT() DESC";
+		
+        	queryPieChart_Client(query);
+		}
+	}
+	// Send an SQL query to Fusion Tables.
+      function queryPieChart_Client(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+		  	resp1=resp;
+			if(resp1.rows!=null){
+		  		drawPieChart_Client();
+			}
+			else
+				alert("No data in this timerange");
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	function drawPieChart_Client() {
+		var tempArray=[];
+		for(var k=0; k<=resp1.rows.length; k++)
+		{
+				tempArray[k]=[];
+		}
+		tempArray[0]=[resp1.columns[0],resp1.columns[1]];
+		for(var i=0; i<resp1.rows.length; i++)
+			for(var j=0; j<resp1.rows[i].length; j++)
+			{
+				if(j%2!=0){
+					resp1.rows[i][j]=parseInt(resp1.rows[i][j])
+				}
+				tempArray[i+1][j]=resp1.rows[i][j];
+			};
+		  array_nation_client = tempArray;	 
+		  var tempMarket=[['Market','Count'],['North America',0],['Europe',0],['Japan',0],['Australia',0],['Asia',0],['Other',0]];
+		  for(var hang=1 ; hang<=resp1.rows.length; hang++)
+		  {
+			var temp=0;
+			for (var area= 0 ; area<6 ; area++)
+			{
+				if (area==5)
+					{
+						tempMarket[6][1] = tempMarket[6][1] + tempArray[hang][1];
+						break;
+					}
+
+				for (var country=0; country<(market[area].length); country++)
+
+				{
+					if ( tempArray[hang][0] == market[area][country] )
+
+					{
+						tempMarket[area+1][1] = tempMarket[area+1][1]+tempArray[hang][1];
+						temp = 1;
+						break;
+					}
+				}
+				if (temp==1) 
+				{
+					temp = 0;
+					break;
+				}
+			}
+		  }
+		  array_market_client=tempMarket;
+		  flag=true;
+		  // Set a callback to run when the Google Visualization API is loaded.
+		  google.setOnLoadCallback(drawChart_market_client());	
+      }
+	function drawChart_market_client() {
+		var data = google.visualization.arrayToDataTable(array_market_client);
+		var options = {
+			title: ''
+		};
+		document.getElementById('view-detail-client').style.display='inline';
+		var chart = new google.visualization.PieChart(document.getElementById('chart_market_client'));
+		chart.draw(data,options); 
+	}
+	function viewDetail_client(){
+	  google.setOnLoadCallback(drawChart_nation_client());	
+	}
+	function drawChart_nation_client() {
+		var data = google.visualization.arrayToDataTable(array_nation_client);
+		var options = {
+			title: ''
+		};		
+		var chart = new google.visualization.PieChart(document.getElementById('chart_nation_client'));
+		chart.draw(data,options); 
+	}
+	function viewBusiness(){
+	var query = "SELECT Location, COUNT() as Count "+
+					"FROM "+tableId+" "+ 
+					"GROUP BY Location ORDER BY COUNT() DESC";
+		
+        queryPieChart_Business(query); //resp2 chua json
+	}
+	function queryPieChart_Business(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+		  	resp2=resp;
+		  	drawPieChart_Business();
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	function drawPieChart_Business() {
+		var tempArray=[];
+		for(var k=0; k<=resp2.rows.length; k++)
+		{
+				tempArray[k]=[];
+		}
+		tempArray[0]=[resp2.columns[0],resp2.columns[1]];
+		for(var i=0; i<resp2.rows.length; i++)
+			for(var j=0; j<resp2.rows[i].length; j++)
+			{
+				if(j%2!=0){
+					resp2.rows[i][j]=parseInt(resp2.rows[i][j])
+				}
+				tempArray[i+1][j]=resp2.rows[i][j];
+			};
+		  array_nation_business = tempArray;
+		  var tempMarket=[['Market','Count'],['North America',0],['Europe',0],['Japan',0],['Australia',0],['Asia',0],['Other',0]];
+		  for(var hang=1 ; hang<=resp2.rows.length; hang++)
+		  {
+			var temp=0;
+			for (var area= 0 ; area<6 ; area++)
+			{
+				if (area==5)
+					{
+						tempMarket[6][1] = tempMarket[6][1] + tempArray[hang][1];
+						break;
+					}
+
+				for (var country=0; country<(market[area].length); country++)
+
+				{
+					if ( tempArray[hang][0] == market[area][country] )
+
+					{
+						tempMarket[area+1][1] = tempMarket[area+1][1]+tempArray[hang][1];
+						temp = 1;
+						break;
+					}
+				}
+				if (temp==1) 
+				{
+					temp = 0;
+					break;
+				}
+			}
+		  }
+		  array_market_business=tempMarket;
+		  flag=true;
+		  // Set a callback to run when the Google Visualization API is loaded.
+		  google.setOnLoadCallback(drawChart_market_business());	
+      }
+    function drawChart_market_business() {
+		var data = google.visualization.arrayToDataTable(array_market_business);
+		var options = {
+			title: ''
+		};		
+		document.getElementById('view-detail-business').style.display='inline';
+		//document.getElementById('show_hide_client_chart').style.display='block';
+		var chart = new google.visualization.PieChart(document.getElementById('chart_market_business'));
+		chart.draw(data,options); 
+	}
+	function viewDetail_business(){
+	  google.setOnLoadCallback(drawChart_nation_business());	
+	}
+	function drawChart_nation_business() {
+		var data = google.visualization.arrayToDataTable(array_nation_business);
+		var options = {
+			title: ''
+		};		
+		var chart = new google.visualization.PieChart(document.getElementById('chart_nation_business'));
+		chart.draw(data,options); 
+	}
+	function viewChannel(){
+		var query = "SELECT Channel, COUNT() as Count "+
+					"FROM "+tableId+" "+ 
+					"GROUP BY Channel ORDER BY COUNT() DESC";
+		
+        queryPieChart_Channel(query); //resp1 chua json
+	}
+	// Send an SQL query to Fusion Tables.
+      function queryPieChart_Channel(query) {
+        var lowerCaseQuery = query.toLowerCase();
+        var path = '/fusiontables/v1/query';
+        var callback = function(element) {
+          return function(resp) {
+		  	resp3=resp;
+		  	drawPieChart_Channel();
+          };
+        }
+          runClientRequest({
+            path: path,
+            params: { 'sql': query }
+          }, callback('select-data-output'));
+      }
+	function drawPieChart_Channel() {
+		var tempArray=[];
+		for(var k=0; k<=resp3.rows.length; k++)
+		{
+				tempArray[k]=[];
+		}
+		tempArray[0]=[resp3.columns[0],resp3.columns[1]];
+		for(var i=0; i<resp3.rows.length; i++)
+			for(var j=0; j<resp3.rows[i].length; j++)
+			{
+				if(j%2!=0){
+					resp3.rows[i][j]=parseInt(resp3.rows[i][j])
+				}
+				tempArray[i+1][j]=resp3.rows[i][j];
+			};
+		  array_channel = tempArray;
+		  flag=true;
+		  // Set a callback to run when the Google Visualization API is loaded.
+		  google.setOnLoadCallback(drawChart_Channel());	
+      }
+	function drawChart_Channel() {
+		var data = google.visualization.arrayToDataTable(array_channel);
+		var options = {
+			title: ''
+		};		
+		var chart = new google.visualization.PieChart(document.getElementById('chart_channel'));
+		chart.draw(data,options); 
+	}
+	function runClientRequest(request, callback) {
+        var restRequest = gapi.client.request(request);
+        restRequest.execute(callback);
+      }
+	
+    </script>
+     <script src="https://apis.google.com/js/client.js?onload=initialize"></script>
+      <link rel="stylesheet" type="text/css" href="../Css file/content.css">
+     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div id="page2">
+	<div id="current">
+   			
+       	   <h4>Homepage>Business Enquiry>Report/Statistics>Pie Chart</h4>
+           	<p id="select-data-output"></p>
+    </div>
+    <div id="nav_bar_cha">
+    	<div id="nav_bar">
+            <div id="nav_bar_sub">	
+            <input type="checkbox" id="client_meeting" value="Client meeting" onchange="if ((document.getElementById('show_hide_client_in').style.display=='none') && (document.getElementById('show_hide_client_chart').style.display=='none')){ document.getElementById('show_hide_client_in').style.display='block';document.getElementById('show_hide_client_chart').style.display='block';}else {document.getElementById('show_hide_client_in').style.display='none';document.getElementById('show_hide_client_chart').style.display='none';}"><li>Client meeting group by market(country)</li>
+            </div>
+            <div id="nav_bar_sub2">
+            <input type="checkbox" id="business_market" value="Business market" onchange="if (document.getElementById('show_hide_market_chart').style.display=='none') {viewBusiness();document.getElementById('show_hide_market_chart').style.display='block';}else document.getElementById('show_hide_market_chart').style.display='none';"><li>Business enquiry group by market(country)</li>
+            </div>
+            <div id="nav_bar_sub">
+            <input type="checkbox" id="business_channel" value="Business channel" onchange="if (document.getElementById('show_hide_channel_chart').style.display=='none'){viewChannel();document.getElementById('show_hide_channel_chart').style.display='block';}else document.getElementById('show_hide_channel_chart').style.display='none';"><li>Business enquiry group by channel</li>
+            </div>  
+		</div>
+    </div>
+    
+    <div id="show_hide_client_in" style="display:none">
+   		  <div id="show_hide_client_in_title">
+            	<li>Input time range to see result:</li>
+                <input type="date"id="date1">--><input type="date"id="date2">
+            </div> 
+				<div id="show_hide_client_in_button"><input type='button' id='view-client' value='View Chart'></div>
+    </div>
+    <div id="sub_page">
+    	<div id="show_hide_client_chart" style="display:none">
+            	<div id="sub_show_chart">
+                	<div id="titile_chart_sub">
+                        	<li>Client meeting group by market</li>
+                    </div>
+                	<div id="chart_market_client">
+                    </div>
+                     <div id="sub_show_chart_fooder2">
+                    </div>
+                    <div id="sub_show_chart_fooder">
+                    </div>
+                </div>
+                <div id="sub_show_chart2">
+                		<div id="titile_chart_sub">
+                        	<li>Client meeting group by country</li>
+                  		</div>
+                	<div id="chart_nation_client">
+                    	
+                    </div> 
+                    <div id="sub_show_chart_fooder2">
+							<input type='button' id='view-detail-client' value='View Detail'>
+                        	<!--<input type='button' id='view-detail-client' value='View Detail' >-->
+                    </div>
+					<div id="sub_show_chart_fooder">
+                    </div>
+                </div>
+        </div>
+        <div id="show_hide_market_chart" style="display:none">
+            	<div id="sub_show_chart">
+                		<div id="titile_chart_sub">
+                        	<li>Business enquiry group by market</li>
+                        </div>
+                	<div id="chart_market_business">
+                    	
+                    </div>
+                    <div id="sub_show_chart_fooder2">
+                    </div>
+                    <div id="sub_show_chart_fooder">
+                    </div>
+                </div>
+                <div id="sub_show_chart2">
+                		<div id="titile_chart_sub">
+                        	<li>Business enquiry group by country</li>
+                        </div>
+                	<div id="chart_nation_business">
+                    	
+                    </div> 
+                  	<div id="sub_show_chart_fooder2">
+                        	<input type='button' id='view-detail-business' value='View Detail' >
+                     </div>
+					<div id="sub_show_chart_fooder">
+                    
+                    </div>
+                </div>
+        </div>
+        <div id="show_hide_channel_chart" style="display:none">
+        	<div id="chart_channel_area">
+            	<div id="chart_channel_left">
+                </div>
+                	<div id="titile_chart_sub">
+                    	<li>Business enquiry group by channel</li>
+                    </div>
+                <div id="chart_channel">
+                	
+                </div>
+                <div id="chart_channel_right">
+                </div>
+            </div>
+        	
+            <div id="sub_show_chart_fooder_channel">
+            </div>
+        </div>
+    </div>
+</div>
+    
+  </body>
+</html>
+
